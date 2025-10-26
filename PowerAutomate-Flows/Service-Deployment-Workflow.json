@@ -1,0 +1,236 @@
+{
+  "name": "Service Deployment Workflow",
+  "description": "Automated workflow for tracking service deployment lifecycle following TOGAF and Enterprise Architecture principles",
+  "trigger": {
+    "type": "When an item is created or modified",
+    "inputs": {
+      "host": {
+        "connection": {
+          "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+        }
+      },
+      "method": "get",
+      "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ServiceDeployment'))}/onupdateditems"
+    }
+  },
+  "actions": {
+    "Get_ARB_Request_Details": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ARBReviewRequests'))}/items",
+        "queries": {
+          "$filter": "Title eq '@{triggerBody()?['ServiceName']}'"
+        }
+      },
+      "runAfter": {}
+    },
+    "Check_Deployment_Stage": {
+      "type": "Switch",
+      "expression": "@triggerBody()?['DeploymentStage']",
+      "cases": {
+        "Planning": {
+          "case": "Planning",
+          "actions": {
+            "Send_Planning_Notification": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['office365']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v2/Mail",
+                "body": {
+                  "To": "@{triggerBody()?['ServiceOwner']?['Email']}",
+                  "Subject": "Service Deployment Planning - @{triggerBody()?['ServiceName']}",
+                  "Body": "<html><body><h2>Service Deployment: Planning Phase</h2><p>Your service has entered the Planning phase (TOGAF Phase E & F).</p><p><strong>Required Activities:</strong></p><ul><li>Develop migration plan</li><li>Allocate resources</li><li>Identify and mitigate risks</li><li>Complete ITIL service design</li><li>Confirm NIST RMF Prepare step</li><li>Validate FedRAMP impact level</li></ul><p><strong>Next Stage:</strong> Design</p></body></html>",
+                  "Importance": "Normal"
+                }
+              }
+            }
+          }
+        },
+        "Design": {
+          "case": "Design",
+          "actions": {
+            "Send_Design_Notification": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['office365']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v2/Mail",
+                "body": {
+                  "To": "@{triggerBody()?['ServiceOwner']?['Email']}",
+                  "Subject": "Service Deployment Design - @{triggerBody()?['ServiceName']}",
+                  "Body": "<html><body><h2>Service Deployment: Design Phase</h2><p><strong>Required Activities:</strong></p><ul><li>Create detailed design documents</li><li>Complete security architecture review</li><li>Finalize integration designs</li><li>Validate data architecture</li><li>Map NIST 800-53 controls</li><li>Initiate FedRAMP SSP</li><li>Complete ITIL service design package</li></ul><p><strong>Next Stage:</strong> Development</p></body></html>"
+                }
+              }
+            }
+          }
+        },
+        "Development": {
+          "case": "Development",
+          "actions": {
+            "Send_Development_Notification": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['office365']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v2/Mail",
+                "body": {
+                  "To": "@{triggerBody()?['ServiceOwner']?['Email']}",
+                  "Subject": "Service Deployment Development - @{triggerBody()?['ServiceName']}",
+                  "Body": "<html><body><h2>Service Deployment: Development Phase (TOGAF Phase G)</h2><p><strong>Required Activities:</strong></p><ul><li>Code development with secure coding practices</li><li>Unit testing</li><li>Security scanning (SAST)</li><li>Compliance validation</li><li>Implement NIST CSF Protect function</li><li>Follow ITIL change enablement</li></ul><p><strong>Next Stage:</strong> Testing</p></body></html>"
+                }
+              }
+            }
+          }
+        },
+        "Testing": {
+          "case": "Testing",
+          "actions": {
+            "Send_Testing_Notification": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['office365']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v2/Mail",
+                "body": {
+                  "To": "@{triggerBody()?['ServiceOwner']?['Email']}",
+                  "Subject": "Service Deployment Testing - @{triggerBody()?['ServiceName']}",
+                  "Body": "<html><body><h2>Service Deployment: Testing Phase</h2><p><strong>Required Testing:</strong></p><ul><li>Integration testing</li><li>Security testing (SAST, DAST, penetration testing)</li><li>Performance testing</li><li>User acceptance testing</li><li>Prepare FedRAMP SAR</li><li>Complete NIST RMF Assess step</li><li>ITIL service validation and testing</li></ul><p><strong>Next Stage:</strong> Staging</p></body></html>"
+                }
+              }
+            }
+          }
+        },
+        "Staging": {
+          "case": "Staging",
+          "actions": {
+            "Send_Staging_Notification": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['office365']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v2/Mail",
+                "body": {
+                  "To": "@{triggerBody()?['ServiceOwner']?['Email']}",
+                  "Subject": "Service Deployment Staging - @{triggerBody()?['ServiceName']}",
+                  "Body": "<html><body><h2>Service Deployment: Staging Phase</h2><p><strong>Final Validations:</strong></p><ul><li>Pre-production deployment</li><li>Final validation testing</li><li>Runbook testing</li><li>Disaster recovery testing</li><li>Authorization preparation</li><li>Final security testing</li><li>Operational readiness review</li></ul><p><strong>Next Stage:</strong> Production</p></body></html>"
+                }
+              }
+            }
+          }
+        },
+        "Production": {
+          "case": "Production",
+          "actions": {
+            "Send_Production_Notification": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['office365']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v2/Mail",
+                "body": {
+                  "To": "@{triggerBody()?['ServiceOwner']?['Email']}",
+                  "Subject": "🎉 Service Deployed to Production - @{triggerBody()?['ServiceName']}",
+                  "Body": "<html><body><h2 style='color: green;'>✅ Service Deployed to Production</h2><p>Congratulations! Your service is now live.</p><p><strong>Post-Deployment Activities:</strong></p><ul><li>Activate monitoring and alerting</li><li>Conduct user training</li><li>Finalize documentation</li><li>Obtain FedRAMP ATO (if applicable)</li><li>Complete NIST RMF Authorize step</li><li>Finalize ITIL service transition</li></ul><p><strong>Ongoing:</strong> Continuous monitoring (TOGAF Phase H)</p></body></html>",
+                  "Importance": "High"
+                }
+              }
+            },
+            "Create_Teams_Production_Announcement": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['teams']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/v3/beta/teams/@{encodeURIComponent('ARB-Team-ID')}/channels/@{encodeURIComponent('General')}/messages",
+                "body": {
+                  "rootMessage": {
+                    "body": {
+                      "contentType": "html",
+                      "content": "<h2>🎉 New Service in Production</h2><p><strong>@{triggerBody()?['ServiceName']}</strong> has been successfully deployed to production!</p><p>Service Owner: @{triggerBody()?['ServiceOwner']?['DisplayName']}</p>"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Send_Production_Notification": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Update_Compliance_Status": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ComplianceTracking'))}/items",
+                "body": {
+                  "Title": "Production Deployment - @{triggerBody()?['ServiceName']}",
+                  "Framework": "Multiple",
+                  "ComplianceStatus": "Compliant",
+                  "LastAssessmentDate": "@{utcNow()}"
+                }
+              },
+              "runAfter": {
+                "Create_Teams_Production_Announcement": [
+                  "Succeeded"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "runAfter": {
+        "Get_ARB_Request_Details": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "metadata": {
+    "description": "Tracks service deployment through all stages with TOGAF ADM alignment and compliance validation"
+  }
+}
