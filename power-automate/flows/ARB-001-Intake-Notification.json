@@ -1,0 +1,179 @@
+{
+  "flowMetadata": {
+    "name": "ARB-001-Intake-Notification",
+    "description": "Notifies gatekeepers when a new ARB submission is created",
+    "version": "1.0.0",
+    "author": "ARB Administrator",
+    "triggerType": "Automated",
+    "connections": [
+      "SharePoint",
+      "Office 365 Outlook",
+      "Office 365 Users"
+    ]
+  },
+  "trigger": {
+    "type": "SharePoint",
+    "operation": "When an item is created",
+    "parameters": {
+      "siteAddress": "https://yourtenant.sharepoint.com/sites/ARB",
+      "listName": "ARB Submissions"
+    }
+  },
+  "actions": [
+    {
+      "id": "1",
+      "name": "Get Submission Details",
+      "type": "SharePoint",
+      "operation": "Get item",
+      "parameters": {
+        "siteAddress": "https://yourtenant.sharepoint.com/sites/ARB",
+        "listName": "ARB Submissions",
+        "id": "@{triggerOutputs()?['body/ID']}"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Get Submitter Details",
+      "type": "Office 365 Users",
+      "operation": "Get user profile",
+      "parameters": {
+        "userId": "@{outputs('Get_Submission_Details')?['body/SubmitterEmail']}"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Get Gatekeeper Group Members",
+      "type": "SharePoint",
+      "operation": "Send an HTTP request to SharePoint",
+      "parameters": {
+        "siteAddress": "https://yourtenant.sharepoint.com/sites/ARB",
+        "method": "GET",
+        "uri": "_api/web/sitegroups/getbyname('ARB Gatekeepers')/users"
+      }
+    },
+    {
+      "id": "4",
+      "name": "Parse Gatekeeper Response",
+      "type": "Data Operations",
+      "operation": "Parse JSON",
+      "parameters": {
+        "content": "@body('Get_Gatekeeper_Group_Members')",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "d": {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "Email": { "type": "string" },
+                      "Title": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "5",
+      "name": "Initialize Email Body Variable",
+      "type": "Variables",
+      "operation": "Initialize variable",
+      "parameters": {
+        "name": "EmailBody",
+        "type": "String",
+        "value": ""
+      }
+    },
+    {
+      "id": "6",
+      "name": "Compose Email Body",
+      "type": "Data Operations",
+      "operation": "Compose",
+      "parameters": {
+        "inputs": "<html><body><h2>New ARB Submission Received</h2><p>A new Architecture Review Board submission has been created and requires intake review.</p><table style='border-collapse: collapse; width: 100%;'><tr style='background-color: #0078d4; color: white;'><th style='border: 1px solid #ddd; padding: 8px;'>Field</th><th style='border: 1px solid #ddd; padding: 8px;'>Value</th></tr><tr><td style='border: 1px solid #ddd; padding: 8px;'><strong>Submission ID</strong></td><td style='border: 1px solid #ddd; padding: 8px;'>@{outputs('Get_Submission_Details')?['body/SubmissionID']}</td></tr><tr><td style='border: 1px solid #ddd; padding: 8px;'><strong>Project Name</strong></td><td style='border: 1px solid #ddd; padding: 8px;'>@{outputs('Get_Submission_Details')?['body/ProjectName']}</td></tr><tr><td style='border: 1px solid #ddd; padding: 8px;'><strong>Submitter</strong></td><td style='border: 1px solid #ddd; padding: 8px;'>@{outputs('Get_Submitter_Details')?['body/displayName']}</td></tr><tr><td style='border: 1px solid #ddd; padding: 8px;'><strong>Business Unit</strong></td><td style='border: 1px solid #ddd; padding: 8px;'>@{outputs('Get_Submission_Details')?['body/BusinessUnit']}</td></tr><tr><td style='border: 1px solid #ddd; padding: 8px;'><strong>Project Type</strong></td><td style='border: 1px solid #ddd; padding: 8px;'>@{outputs('Get_Submission_Details')?['body/ProjectType']}</td></tr><tr><td style='border: 1px solid #ddd; padding: 8px;'><strong>Priority</strong></td><td style='border: 1px solid #ddd; padding: 8px;'>@{outputs('Get_Submission_Details')?['body/Priority']}</td></tr><tr><td style='border: 1px solid #ddd; padding: 8px;'><strong>Estimated Cost</strong></td><td style='border: 1px solid #ddd; padding: 8px;'>$@{outputs('Get_Submission_Details')?['body/EstimatedCost']}</td></tr><tr><td style='border: 1px solid #ddd; padding: 8px;'><strong>Submission Date</strong></td><td style='border: 1px solid #ddd; padding: 8px;'>@{formatDateTime(outputs('Get_Submission_Details')?['body/SubmissionDate'], 'MM/dd/yyyy')}</td></tr></table><h3>Next Steps</h3><p>Please review this submission within 3 business days and:</p><ul><li>Verify completeness of the submission</li><li>Assign technical and security reviewers</li><li>Accept, return, or reject the submission</li></ul><p><a href='https://yourtenant.sharepoint.com/sites/ARB/Lists/ARBSubmissions/DispForm.aspx?ID=@{outputs('Get_Submission_Details')?['body/ID']}' style='background-color: #0078d4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>View Submission</a></p><p><em>This is an automated notification from the ARB system.</em></p></body></html>"
+      }
+    },
+    {
+      "id": "7",
+      "name": "Send Email to Gatekeepers",
+      "type": "Office 365 Outlook",
+      "operation": "Send an email (V2)",
+      "parameters": {
+        "to": "arb-gatekeepers@agency.gov",
+        "subject": "New ARB Submission: @{outputs('Get_Submission_Details')?['body/ProjectName']} (@{outputs('Get_Submission_Details')?['body/SubmissionID']})",
+        "body": "@{outputs('Compose_Email_Body')}",
+        "importance": "Normal",
+        "isHtml": true
+      }
+    },
+    {
+      "id": "8",
+      "name": "Update Submission Status",
+      "type": "SharePoint",
+      "operation": "Update item",
+      "parameters": {
+        "siteAddress": "https://yourtenant.sharepoint.com/sites/ARB",
+        "listName": "ARB Submissions",
+        "id": "@{triggerOutputs()?['body/ID']}",
+        "Status": "Submitted"
+      }
+    },
+    {
+      "id": "9",
+      "name": "Calculate SLA Due Date",
+      "type": "Data Operations",
+      "operation": "Compose",
+      "parameters": {
+        "inputs": "@{addDays(utcNow(), 3)}"
+      }
+    },
+    {
+      "id": "10",
+      "name": "Update SLA Due Date",
+      "type": "SharePoint",
+      "operation": "Update item",
+      "parameters": {
+        "siteAddress": "https://yourtenant.sharepoint.com/sites/ARB",
+        "listName": "ARB Submissions",
+        "id": "@{triggerOutputs()?['body/ID']}",
+        "SLADueDate": "@{outputs('Calculate_SLA_Due_Date')}"
+      }
+    },
+    {
+      "id": "11",
+      "name": "Send Confirmation to Submitter",
+      "type": "Office 365 Outlook",
+      "operation": "Send an email (V2)",
+      "parameters": {
+        "to": "@{outputs('Get_Submission_Details')?['body/SubmitterEmail']}",
+        "subject": "ARB Submission Received: @{outputs('Get_Submission_Details')?['body/ProjectName']}",
+        "body": "<html><body><h2>Thank You for Your ARB Submission</h2><p>Dear @{outputs('Get_Submitter_Details')?['body/displayName']},</p><p>Your Architecture Review Board submission has been successfully received.</p><table style='border-collapse: collapse;'><tr><td><strong>Submission ID:</strong></td><td>@{outputs('Get_Submission_Details')?['body/SubmissionID']}</td></tr><tr><td><strong>Project Name:</strong></td><td>@{outputs('Get_Submission_Details')?['body/ProjectName']}</td></tr><tr><td><strong>Submission Date:</strong></td><td>@{formatDateTime(outputs('Get_Submission_Details')?['body/SubmissionDate'], 'MM/dd/yyyy')}</td></tr><tr><td><strong>Current Status:</strong></td><td>Submitted - Pending Intake Review</td></tr></table><h3>What Happens Next?</h3><ol><li>A gatekeeper will review your submission within 3 business days</li><li>If complete, technical and security reviewers will be assigned</li><li>You will receive status updates via email</li><li>The typical review process takes 27 business days</li></ol><p>You can track your submission status at: <a href='https://yourtenant.sharepoint.com/sites/ARB/Lists/ARBSubmissions/MySubmissions.aspx'>My Submissions</a></p><p>If you have questions, contact the ARB Help Desk at arb-support@agency.gov</p><p><em>This is an automated confirmation from the ARB system.</em></p></body></html>",
+        "importance": "Normal",
+        "isHtml": true
+      }
+    }
+  ],
+  "errorHandling": {
+    "scope": "Flow",
+    "runAfter": {},
+    "actions": [
+      {
+        "name": "Send Error Notification",
+        "type": "Office 365 Outlook",
+        "operation": "Send an email (V2)",
+        "parameters": {
+          "to": "arb-admin@agency.gov",
+          "subject": "ARB Flow Error: Intake Notification",
+          "body": "Error occurred in ARB-001-Intake-Notification flow. Submission ID: @{outputs('Get_Submission_Details')?['body/SubmissionID']}. Error: @{result('Send_Email_to_Gatekeepers')}"
+        }
+      }
+    ]
+  }
+}
