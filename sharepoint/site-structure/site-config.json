@@ -1,0 +1,165 @@
+{
+  "siteConfig": {
+    "siteType": "CommunicationSite",
+    "title": "Architecture Review Board",
+    "alias": "ARB",
+    "description": "Enterprise Architecture Review Board Portal - Automated approval and governance system",
+    "lcid": 1033,
+    "owner": "arb-admin@agency.gov",
+    "isPublic": false,
+    "classification": "Internal Use Only",
+    "hubSiteId": null,
+    "storageQuota": 26214400,
+    "resourceQuota": 300
+  },
+  "navigation": {
+    "topNavigation": [
+      {
+        "title": "Home",
+        "url": "/sites/ARB",
+        "isExternal": false
+      },
+      {
+        "title": "Submit Request",
+        "url": "/sites/ARB/Lists/ARBSubmissions/NewForm.aspx",
+        "isExternal": false
+      },
+      {
+        "title": "My Submissions",
+        "url": "/sites/ARB/Lists/ARBSubmissions/MyItems.aspx",
+        "isExternal": false
+      },
+      {
+        "title": "Review Queue",
+        "url": "/sites/ARB/Lists/ARBSubmissions/PendingReviews.aspx",
+        "isExternal": false
+      },
+      {
+        "title": "Dashboards",
+        "url": "/sites/ARB/SitePages/Dashboards.aspx",
+        "isExternal": false
+      },
+      {
+        "title": "Templates",
+        "url": "/sites/ARB/ARBTemplates",
+        "isExternal": false
+      },
+      {
+        "title": "Help",
+        "url": "/sites/ARB/SitePages/Help.aspx",
+        "isExternal": false
+      }
+    ],
+    "quickLaunch": [
+      {
+        "title": "Submissions",
+        "url": "#",
+        "isExternal": false,
+        "children": [
+          {
+            "title": "All Submissions",
+            "url": "/sites/ARB/Lists/ARBSubmissions/AllItems.aspx"
+          },
+          {
+            "title": "Active Submissions",
+            "url": "/sites/ARB/Lists/ARBSubmissions/ActiveSubmissions.aspx"
+          },
+          {
+            "title": "My Submissions",
+            "url": "/sites/ARB/Lists/ARBSubmissions/MySubmissions.aspx"
+          },
+          {
+            "title": "Pending Reviews",
+            "url": "/sites/ARB/Lists/ARBSubmissions/PendingReviews.aspx"
+          }
+        ]
+      },
+      {
+        "title": "Reviews",
+        "url": "#",
+        "children": [
+          {
+            "title": "Technical Reviews",
+            "url": "/sites/ARB/Lists/TechnicalReviews/AllItems.aspx"
+          },
+          {
+            "title": "Security Reviews",
+            "url": "/sites/ARB/Lists/SecurityReviews/AllItems.aspx"
+          }
+        ]
+      },
+      {
+        "title": "Documents",
+        "url": "#",
+        "children": [
+          {
+            "title": "Submission Documents",
+            "url": "/sites/ARB/ARBSubmissionDocs"
+          },
+          {
+            "title": "Board Decisions",
+            "url": "/sites/ARB/BoardDecisions"
+          },
+          {
+            "title": "Templates",
+            "url": "/sites/ARB/ARBTemplates"
+          }
+        ]
+      },
+      {
+        "title": "Reports",
+        "url": "#",
+        "children": [
+          {
+            "title": "Executive Dashboard",
+            "url": "/sites/ARB/SitePages/ExecutiveDashboard.aspx"
+          },
+          {
+            "title": "Operational Dashboard",
+            "url": "/sites/ARB/SitePages/OperationalDashboard.aspx"
+          },
+          {
+            "title": "Compliance Dashboard",
+            "url": "/sites/ARB/SitePages/ComplianceDashboard.aspx"
+          }
+        ]
+      }
+    ]
+  },
+  "theme": {
+    "name": "Blue",
+    "primaryColor": "#0078d4",
+    "bodyText": "#323130",
+    "bodyBackground": "#ffffff",
+    "headerBackground": "#0078d4",
+    "headerText": "#ffffff"
+  },
+  "features": [
+    {
+      "id": "00bfea71-e717-4e80-aa17-d0c71b360101",
+      "name": "TeamCollab",
+      "scope": "Site"
+    },
+    {
+      "id": "94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb",
+      "name": "MetadataNavigation",
+      "scope": "Site"
+    }
+  ],
+  "regionalSettings": {
+    "timeZone": 11,
+    "locale": 1033,
+    "workDayStart": 480,
+    "workDayEnd": 1020,
+    "workDays": 62,
+    "firstDayOfWeek": 0,
+    "firstWeekOfYear": 0,
+    "calendarType": 1
+  },
+  "versioningSettings": {
+    "enableVersioning": true,
+    "enableMinorVersions": false,
+    "majorVersionLimit": 50,
+    "minorVersionLimit": 0
+  }
+}
