@@ -261,5 +261,5 @@ Before submitting, verify:
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: 2025  
+**Last Updated**: October 2025  
 **Review this checklist before every ARB submission**

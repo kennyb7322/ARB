@@ -626,5 +626,5 @@ All architectures must address relevant NIST 800-53 control families:
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: 2025  
+**Last Updated**: October 2025  
 **Next Review**: Quarterly

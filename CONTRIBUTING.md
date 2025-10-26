@@ -153,7 +153,7 @@ When contributing, ensure compliance with these frameworks:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/kennyb7322/ARB.git
+   git clone https://github.com/yourusername/ARB.git
    cd ARB
    ```
 
@@ -216,4 +216,4 @@ Thank you for contributing! 🎉
 
 ---
 
-**Last Updated**: 2025
+**Last Updated**: October 2025

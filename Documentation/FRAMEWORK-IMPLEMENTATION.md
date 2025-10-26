@@ -659,5 +659,5 @@ Create subfolder in Security Architecture:
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: 2025  
+**Last Updated**: October 2025  
 **Maintained By**: Enterprise Architecture Team

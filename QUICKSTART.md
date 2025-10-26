@@ -270,4 +270,4 @@ For detailed information, always refer to the comprehensive guides in the `Docum
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: 2025
+**Last Updated**: October 2025
