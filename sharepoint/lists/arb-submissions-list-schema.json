@@ -1,0 +1,452 @@
+{
+  "list": {
+    "title": "ARB Submissions",
+    "description": "Architecture Review Board submission tracking list",
+    "template": "GenericList",
+    "url": "Lists/ARBSubmissions",
+    "enableVersioning": true,
+    "enableAttachments": true,
+    "enableFolderCreation": false,
+    "enableContentTypes": true,
+    "contentTypesEnabled": true,
+    "defaultContentType": "Item"
+  },
+  "fields": [
+    {
+      "internalName": "SubmissionID",
+      "displayName": "Submission ID",
+      "type": "Text",
+      "required": true,
+      "enforceUniqueValues": true,
+      "indexed": true,
+      "maxLength": 50,
+      "description": "Unique identifier for the submission (e.g., ARB-2024-001)"
+    },
+    {
+      "internalName": "ProjectName",
+      "displayName": "Project Name",
+      "type": "Text",
+      "required": true,
+      "maxLength": 255,
+      "description": "Name of the project or initiative"
+    },
+    {
+      "internalName": "SubmitterEmail",
+      "displayName": "Submitter Email",
+      "type": "Text",
+      "required": true,
+      "maxLength": 255,
+      "description": "Email address of the person submitting the request"
+    },
+    {
+      "internalName": "SubmissionDate",
+      "displayName": "Submission Date",
+      "type": "DateTime",
+      "required": true,
+      "format": "DateOnly",
+      "description": "Date the submission was created"
+    },
+    {
+      "internalName": "Status",
+      "displayName": "Status",
+      "type": "Choice",
+      "required": true,
+      "choices": [
+        "Draft",
+        "Submitted",
+        "In Intake Review",
+        "In Technical Review",
+        "In Security Review",
+        "In Board Review",
+        "Approved",
+        "Conditional Approval",
+        "Rejected",
+        "Returned to Submitter",
+        "Withdrawn"
+      ],
+      "defaultValue": "Draft",
+      "description": "Current status of the submission"
+    },
+    {
+      "internalName": "Priority",
+      "displayName": "Priority",
+      "type": "Choice",
+      "required": false,
+      "choices": [
+        "Critical",
+        "High",
+        "Medium",
+        "Low"
+      ],
+      "defaultValue": "Medium",
+      "description": "Business priority of the submission"
+    },
+    {
+      "internalName": "BusinessUnit",
+      "displayName": "Business Unit",
+      "type": "Choice",
+      "required": false,
+      "choices": [
+        "IT Infrastructure",
+        "Application Development",
+        "Data Services",
+        "Security",
+        "Cloud Services",
+        "Enterprise Architecture",
+        "Operations",
+        "Other"
+      ],
+      "description": "Business unit or department submitting the request"
+    },
+    {
+      "internalName": "ProjectType",
+      "displayName": "Project Type",
+      "type": "Choice",
+      "required": true,
+      "choices": [
+        "Infrastructure",
+        "Application",
+        "Data",
+        "Security",
+        "Cloud",
+        "Integration",
+        "Network",
+        "Other"
+      ],
+      "description": "Type/category of the project"
+    },
+    {
+      "internalName": "EstimatedCost",
+      "displayName": "Estimated Cost",
+      "type": "Currency",
+      "required": false,
+      "min": 0,
+      "max": 999999999,
+      "currencyLocaleId": 1033,
+      "description": "Estimated total cost of the project"
+    },
+    {
+      "internalName": "ProposedStartDate",
+      "displayName": "Proposed Start Date",
+      "type": "DateTime",
+      "required": false,
+      "format": "DateOnly",
+      "description": "Proposed project start date"
+    },
+    {
+      "internalName": "ProposedEndDate",
+      "displayName": "Proposed End Date",
+      "type": "DateTime",
+      "required": false,
+      "format": "DateOnly",
+      "description": "Proposed project completion date"
+    },
+    {
+      "internalName": "TechnicalReviewer",
+      "displayName": "Technical Reviewer",
+      "type": "User",
+      "required": false,
+      "allowMultipleValues": false,
+      "description": "Assigned technical reviewer"
+    },
+    {
+      "internalName": "SecurityReviewer",
+      "displayName": "Security Reviewer",
+      "type": "User",
+      "required": false,
+      "allowMultipleValues": false,
+      "description": "Assigned security reviewer"
+    },
+    {
+      "internalName": "Gatekeeper",
+      "displayName": "Gatekeeper",
+      "type": "User",
+      "required": false,
+      "allowMultipleValues": false,
+      "description": "Assigned gatekeeper for intake review"
+    },
+    {
+      "internalName": "BoardDecisionDate",
+      "displayName": "Board Decision Date",
+      "type": "DateTime",
+      "required": false,
+      "format": "DateOnly",
+      "description": "Date the board made their decision"
+    },
+    {
+      "internalName": "Decision",
+      "displayName": "Decision",
+      "type": "Choice",
+      "required": false,
+      "choices": [
+        "Approved",
+        "Conditional Approval",
+        "Rejected",
+        "Pending"
+      ],
+      "defaultValue": "Pending",
+      "description": "Final board decision"
+    },
+    {
+      "internalName": "DecisionNotes",
+      "displayName": "Decision Notes",
+      "type": "Note",
+      "required": false,
+      "richText": true,
+      "numberOfLines": 6,
+      "description": "Notes or conditions from the board decision"
+    },
+    {
+      "internalName": "ExecutiveSummary",
+      "displayName": "Executive Summary",
+      "type": "Note",
+      "required": false,
+      "richText": true,
+      "numberOfLines": 10,
+      "description": "Brief executive summary of the submission"
+    },
+    {
+      "internalName": "BusinessJustification",
+      "displayName": "Business Justification",
+      "type": "Note",
+      "required": false,
+      "richText": true,
+      "numberOfLines": 10,
+      "description": "Business justification and benefits"
+    },
+    {
+      "internalName": "TechnicalApproach",
+      "displayName": "Technical Approach",
+      "type": "Note",
+      "required": false,
+      "richText": true,
+      "numberOfLines": 10,
+      "description": "Technical approach and architecture overview"
+    },
+    {
+      "internalName": "SLADueDate",
+      "displayName": "SLA Due Date",
+      "type": "DateTime",
+      "required": false,
+      "format": "DateTime",
+      "description": "Calculated SLA due date for current stage"
+    },
+    {
+      "internalName": "SLAStatus",
+      "displayName": "SLA Status",
+      "type": "Choice",
+      "required": false,
+      "choices": [
+        "On Track",
+        "At Risk",
+        "Breached"
+      ],
+      "defaultValue": "On Track",
+      "description": "SLA compliance status"
+    },
+    {
+      "internalName": "IntakeReviewDate",
+      "displayName": "Intake Review Date",
+      "type": "DateTime",
+      "required": false,
+      "format": "DateOnly",
+      "description": "Date intake review was completed"
+    },
+    {
+      "internalName": "TechnicalReviewDate",
+      "displayName": "Technical Review Date",
+      "type": "DateTime",
+      "required": false,
+      "format": "DateOnly",
+      "description": "Date technical review was completed"
+    },
+    {
+      "internalName": "SecurityReviewDate",
+      "displayName": "Security Review Date",
+      "type": "DateTime",
+      "required": false,
+      "format": "DateOnly",
+      "description": "Date security review was completed"
+    },
+    {
+      "internalName": "ComplianceRequirements",
+      "displayName": "Compliance Requirements",
+      "type": "MultiChoice",
+      "required": false,
+      "choices": [
+        "FedRAMP",
+        "FISMA",
+        "NIST 800-53",
+        "HIPAA",
+        "PCI-DSS",
+        "SOX",
+        "GDPR",
+        "None"
+      ],
+      "description": "Applicable compliance and regulatory requirements"
+    },
+    {
+      "internalName": "RiskLevel",
+      "displayName": "Risk Level",
+      "type": "Choice",
+      "required": false,
+      "choices": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ],
+      "description": "Overall risk level assessment"
+    }
+  ],
+  "views": [
+    {
+      "title": "All Submissions",
+      "isDefault": true,
+      "viewFields": [
+        "LinkTitle",
+        "SubmissionID",
+        "ProjectName",
+        "Status",
+        "Priority",
+        "SubmissionDate",
+        "Decision"
+      ],
+      "query": "",
+      "rowLimit": 30,
+      "paged": true,
+      "scope": "Recursive"
+    },
+    {
+      "title": "Active Submissions",
+      "isDefault": false,
+      "viewFields": [
+        "SubmissionID",
+        "ProjectName",
+        "Status",
+        "Priority",
+        "SubmissionDate",
+        "SLAStatus",
+        "Gatekeeper"
+      ],
+      "query": "<Where><And><Neq><FieldRef Name='Status'/><Value Type='Choice'>Approved</Value></Neq><Neq><FieldRef Name='Status'/><Value Type='Choice'>Rejected</Value></Neq></And></Where><OrderBy><FieldRef Name='Priority' Ascending='FALSE'/><FieldRef Name='SubmissionDate' Ascending='TRUE'/></OrderBy>",
+      "rowLimit": 50,
+      "paged": true
+    },
+    {
+      "title": "My Submissions",
+      "isDefault": false,
+      "personalView": true,
+      "viewFields": [
+        "SubmissionID",
+        "ProjectName",
+        "Status",
+        "Priority",
+        "SubmissionDate",
+        "SLAStatus"
+      ],
+      "query": "<Where><Eq><FieldRef Name='SubmitterEmail'/><Value Type='Text'>[Me]</Value></Eq></Where><OrderBy><FieldRef Name='SubmissionDate' Ascending='FALSE'/></OrderBy>",
+      "rowLimit": 30,
+      "paged": true
+    },
+    {
+      "title": "Pending Reviews",
+      "isDefault": false,
+      "viewFields": [
+        "SubmissionID",
+        "ProjectName",
+        "Status",
+        "Priority",
+        "TechnicalReviewer",
+        "SecurityReviewer",
+        "SLADueDate",
+        "SLAStatus"
+      ],
+      "query": "<Where><Or><Or><Eq><FieldRef Name='Status'/><Value Type='Choice'>In Technical Review</Value></Eq><Eq><FieldRef Name='Status'/><Value Type='Choice'>In Security Review</Value></Eq></Or><Eq><FieldRef Name='Status'/><Value Type='Choice'>In Intake Review</Value></Eq></Or></Where><OrderBy><FieldRef Name='SLADueDate' Ascending='TRUE'/></OrderBy>",
+      "rowLimit": 50,
+      "paged": true
+    },
+    {
+      "title": "Board Review Queue",
+      "isDefault": false,
+      "viewFields": [
+        "SubmissionID",
+        "ProjectName",
+        "Priority",
+        "EstimatedCost",
+        "SubmissionDate",
+        "TechnicalReviewer",
+        "SecurityReviewer"
+      ],
+      "query": "<Where><Eq><FieldRef Name='Status'/><Value Type='Choice'>In Board Review</Value></Eq></Where><OrderBy><FieldRef Name='Priority' Ascending='FALSE'/><FieldRef Name='SubmissionDate' Ascending='TRUE'/></OrderBy>",
+      "rowLimit": 30,
+      "paged": true
+    },
+    {
+      "title": "SLA Violations",
+      "isDefault": false,
+      "viewFields": [
+        "SubmissionID",
+        "ProjectName",
+        "Status",
+        "Priority",
+        "SLADueDate",
+        "SLAStatus",
+        "Gatekeeper"
+      ],
+      "query": "<Where><Eq><FieldRef Name='SLAStatus'/><Value Type='Choice'>Breached</Value></Eq></Where><OrderBy><FieldRef Name='SLADueDate' Ascending='TRUE'/></OrderBy>",
+      "rowLimit": 50,
+      "paged": true
+    },
+    {
+      "title": "Approved Projects",
+      "isDefault": false,
+      "viewFields": [
+        "SubmissionID",
+        "ProjectName",
+        "ProjectType",
+        "EstimatedCost",
+        "BoardDecisionDate",
+        "Decision"
+      ],
+      "query": "<Where><Eq><FieldRef Name='Decision'/><Value Type='Choice'>Approved</Value></Eq></Where><OrderBy><FieldRef Name='BoardDecisionDate' Ascending='FALSE'/></OrderBy>",
+      "rowLimit": 30,
+      "paged": true
+    }
+  ],
+  "permissions": {
+    "breakRoleInheritance": true,
+    "groups": [
+      {
+        "name": "ARB Submitters",
+        "permission": "Contribute",
+        "description": "Can create and edit their own submissions"
+      },
+      {
+        "name": "ARB Gatekeepers",
+        "permission": "Edit",
+        "description": "Can review and assign submissions"
+      },
+      {
+        "name": "ARB Technical Reviewers",
+        "permission": "Edit",
+        "description": "Can review technical aspects"
+      },
+      {
+        "name": "ARB Security Reviewers",
+        "permission": "Edit",
+        "description": "Can review security aspects"
+      },
+      {
+        "name": "ARB Board Members",
+        "permission": "Edit",
+        "description": "Can make final decisions"
+      },
+      {
+        "name": "ARB Administrators",
+        "permission": "Full Control",
+        "description": "Can manage the system"
+      }
+    ]
+  }
+}
