@@ -1,0 +1,99 @@
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# PowerShell
+*.ps1xml
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.log
+~$*
+
+# Power BI
+*.pbix
+*.pbit
+.pbiworkspace
+
+# Build Artifacts
+dist/
+build/
+*.zip
+*.tar.gz
+
+# Node modules (if used for any tooling)
+node_modules/
+package-lock.json
+
+# Python (if used for any tooling)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv
+
+# Test files
+test/
+tests/
+*.test.xml
+*.test.json
+
+# Personal configuration files
+.env
+.env.local
+config.local.*
+appsettings.local.json
+
+# SharePoint specific
+.spdata
+*.webpart
+
+# Documentation build artifacts
+_site/
+.jekyll-cache/
+
+# Deployment artifacts
+deploy/
+staging/
+
+# Secrets and credentials
+secrets/
+credentials/
+*.pfx
+*.key
+*.pem
+*.cer
+*.crt
+
+# Large files
+*.iso
+*.dmg
+*.exe
+
+# Backup files
+*.backup
+backup/
+
+# Custom exclusions for this project
+# (Add any project-specific files to ignore)
