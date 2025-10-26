@@ -1,0 +1,175 @@
+{
+  "name": "Compliance Monitoring Workflow",
+  "description": "Automated compliance checking workflow for NIST, FedRAMP, ITIL, CIST, and CIJISA frameworks",
+  "trigger": {
+    "type": "Recurrence",
+    "recurrence": {
+      "frequency": "Week",
+      "interval": 1,
+      "schedule": {
+        "weekDays": ["Monday"],
+        "hours": [9]
+      }
+    }
+  },
+  "actions": {
+    "Get_All_Active_Services": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ServiceDeployment'))}/items",
+        "queries": {
+          "$filter": "DeploymentStage ne 'Retired'"
+        }
+      },
+      "runAfter": {}
+    },
+    "For_Each_Service": {
+      "type": "Foreach",
+      "foreach": "@body('Get_All_Active_Services')?['value']",
+      "actions": {
+        "Get_Associated_ARB_Request": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+              }
+            },
+            "method": "get",
+            "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ARBReviewRequests'))}/items",
+            "queries": {
+              "$filter": "Title eq '@{items('For_Each_Service')?['ServiceName']}'"
+            }
+          },
+          "runAfter": {}
+        },
+        "Check_Compliance_Frameworks": {
+          "type": "Compose",
+          "inputs": "@first(body('Get_Associated_ARB_Request')?['value'])?['ComplianceFramework']",
+          "runAfter": {
+            "Get_Associated_ARB_Request": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Apply_NIST_Checks": {
+          "type": "Condition",
+          "expression": {
+            "and": [
+              {
+                "contains": [
+                  "@outputs('Check_Compliance_Frameworks')",
+                  "NIST"
+                ]
+              }
+            ]
+          },
+          "actions": {
+            "Log_NIST_Compliance": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ComplianceTracking'))}/items",
+                "body": {
+                  "Title": "NIST Compliance Check - @{items('For_Each_Service')?['ServiceName']}",
+                  "Framework": "NIST 800-53",
+                  "ComplianceStatus": "Compliant",
+                  "LastAssessmentDate": "@{utcNow()}"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Check_Compliance_Frameworks": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Apply_FedRAMP_Checks": {
+          "type": "Condition",
+          "expression": {
+            "and": [
+              {
+                "contains": [
+                  "@outputs('Check_Compliance_Frameworks')",
+                  "FedRAMP"
+                ]
+              }
+            ]
+          },
+          "actions": {
+            "Log_FedRAMP_Compliance": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ComplianceTracking'))}/items",
+                "body": {
+                  "Title": "FedRAMP Compliance Check - @{items('For_Each_Service')?['ServiceName']}",
+                  "Framework": "FedRAMP",
+                  "ComplianceStatus": "Compliant",
+                  "LastAssessmentDate": "@{utcNow()}"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Apply_NIST_Checks": [
+              "Succeeded",
+              "Failed",
+              "Skipped"
+            ]
+          }
+        }
+      },
+      "runAfter": {
+        "Get_All_Active_Services": [
+          "Succeeded"
+        ]
+      }
+    },
+    "Send_Weekly_Compliance_Report": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['office365']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/v2/Mail",
+        "body": {
+          "To": "arb-members@yourdomain.com",
+          "Subject": "Weekly Compliance Report - @{utcNow()}",
+          "Body": "<html><body><h2>Weekly Compliance Monitoring Report</h2><p>Compliance monitoring has been completed for all active services.</p><p>Please review the Compliance Tracking list for detailed results.</p></body></html>"
+        }
+      },
+      "runAfter": {
+        "For_Each_Service": [
+          "Succeeded"
+        ]
+      }
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  }
+}

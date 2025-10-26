@@ -1,0 +1,201 @@
+{
+  "name": "ARB Review Workflow",
+  "description": "Automated workflow for Architecture Review Board review process",
+  "trigger": {
+    "type": "When an item is created or modified",
+    "inputs": {
+      "host": {
+        "connection": {
+          "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+        }
+      },
+      "method": "get",
+      "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ARBReviewRequests'))}/onupdateditems"
+    }
+  },
+  "actions": {
+    "Condition_Check_Status": {
+      "type": "Condition",
+      "expression": {
+        "and": [
+          {
+            "equals": [
+              "@triggerBody()?['ReviewStatus']",
+              "Submitted"
+            ]
+          }
+        ]
+      },
+      "actions": {
+        "Send_Email_to_ARB_Members": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['office365']['connectionId']"
+              }
+            },
+            "method": "post",
+            "path": "/v2/Mail",
+            "body": {
+              "To": "arb-members@yourdomain.com",
+              "Subject": "New ARB Review Request: @{triggerBody()?['Title']}",
+              "Body": "<html><body><h2>New Architecture Review Request</h2><p><strong>Title:</strong> @{triggerBody()?['Title']}</p><p><strong>Domain:</strong> @{triggerBody()?['ArchitectureDomain']}</p><p><strong>TOGAF Phase:</strong> @{triggerBody()?['TOGAFPhase']}</p><p><strong>Risk Level:</strong> @{triggerBody()?['RiskLevel']}</p><p><strong>Compliance Frameworks:</strong> @{triggerBody()?['ComplianceFramework']}</p><p><strong>Description:</strong> @{triggerBody()?['ArchitectureDescription']}</p><p><a href='@{triggerBody()?['{Link}']}'>View Request</a></p></body></html>",
+              "Importance": "High"
+            }
+          },
+          "runAfter": {}
+        },
+        "Create_Teams_Notification": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['teams']['connectionId']"
+              }
+            },
+            "method": "post",
+            "path": "/v3/beta/teams/@{encodeURIComponent('ARB-Team-ID')}/channels/@{encodeURIComponent('General')}/messages",
+            "body": {
+              "rootMessage": {
+                "body": {
+                  "contentType": "html",
+                  "content": "<h2>🔔 New ARB Review Request</h2><p><strong>@{triggerBody()?['Title']}</strong></p><p>Domain: @{triggerBody()?['ArchitectureDomain']}<br/>TOGAF Phase: @{triggerBody()?['TOGAFPhase']}<br/>Risk Level: @{triggerBody()?['RiskLevel']}</p><a href='@{triggerBody()?['{Link}']}'>Review Now</a>"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Send_Email_to_ARB_Members": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Update_Item_Status": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+              }
+            },
+            "method": "patch",
+            "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ARBReviewRequests'))}/items/@{triggerBody()?['ID']}",
+            "body": {
+              "ReviewStatus": "In Review"
+            }
+          },
+          "runAfter": {
+            "Create_Teams_Notification": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Log_Compliance_Check": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+              }
+            },
+            "method": "post",
+            "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ComplianceTracking'))}/items",
+            "body": {
+              "Title": "ARB Review - @{triggerBody()?['Title']}",
+              "Framework": "@{first(triggerBody()?['ComplianceFramework'])}",
+              "ComplianceStatus": "Under Review",
+              "LastAssessmentDate": "@{utcNow()}"
+            }
+          },
+          "runAfter": {
+            "Update_Item_Status": [
+              "Succeeded"
+            ]
+          }
+        }
+      }
+    },
+    "Condition_Check_Approved": {
+      "type": "Condition",
+      "expression": {
+        "and": [
+          {
+            "equals": [
+              "@triggerBody()?['ReviewStatus']",
+              "Approved"
+            ]
+          }
+        ]
+      },
+      "actions": {
+        "Send_Approval_Email": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['office365']['connectionId']"
+              }
+            },
+            "method": "post",
+            "path": "/v2/Mail",
+            "body": {
+              "To": "@{triggerBody()?['ArchitectureOwner']?['Email']}",
+              "Subject": "ARB Review Approved: @{triggerBody()?['Title']}",
+              "Body": "<html><body><h2 style='color: green;'>✅ Architecture Review Approved</h2><p>Your architecture review request has been approved by the ARB.</p><p><strong>Next Steps:</strong></p><ul><li>Proceed with implementation according to TOGAF ADM phases</li><li>Ensure compliance with identified frameworks: @{triggerBody()?['ComplianceFramework']}</li><li>Update Service Deployment Tracking</li></ul><p><a href='@{triggerBody()?['{Link}']}'>View Details</a></p></body></html>",
+              "Importance": "High"
+            }
+          },
+          "runAfter": {}
+        },
+        "Create_Service_Deployment_Entry": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+              }
+            },
+            "method": "post",
+            "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://yourtenant.sharepoint.com/sites/ARB'))}/tables/@{encodeURIComponent(encodeURIComponent('ServiceDeployment'))}/items",
+            "body": {
+              "Title": "@{triggerBody()?['Title']}",
+              "ServiceName": "@{triggerBody()?['Title']}",
+              "DeploymentStage": "Planning",
+              "ServiceOwner": "@{triggerBody()?['ArchitectureOwner']}"
+            }
+          },
+          "runAfter": {
+            "Send_Approval_Email": [
+              "Succeeded"
+            ]
+          }
+        }
+      },
+      "runAfter": {
+        "Condition_Check_Status": [
+          "Succeeded",
+          "Failed",
+          "Skipped"
+        ]
+      }
+    }
+  },
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  },
+  "metadata": {
+    "frameworkSupport": [
+      "TOGAF ADM",
+      "ITIL v4 Service Management",
+      "NIST 800-53 Controls",
+      "FedRAMP Compliance",
+      "CIST Framework",
+      "CIJISA Standards"
+    ],
+    "description": "This workflow automates the ARB review process following enterprise architecture governance principles"
+  }
+}

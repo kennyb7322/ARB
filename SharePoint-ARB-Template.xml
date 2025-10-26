@@ -1,0 +1,282 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2021/09/ProvisioningSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://schemas.dev.office.com/PnP/2021/09/ProvisioningSchema https://aka.ms/sppnp-provisioningschema">
+  <pnp:Preferences Generator="ARB Template Generator">
+    <pnp:Parameters>
+      <pnp:Parameter Key="SiteTitle">Architecture Review Board</pnp:Parameter>
+      <pnp:Parameter Key="SiteDescription">ARB Site for Enterprise Architecture Governance</pnp:Parameter>
+    </pnp:Parameters>
+  </pnp:Preferences>
+  <pnp:Templates ID="ARB-TEMPLATE">
+    <pnp:ProvisioningTemplate ID="ARB-Site-Template" Version="1.0" 
+                              BaseSiteTemplate="STS#3" 
+                              Scope="Site">
+      <pnp:SiteSettings AllowDesigner="true" AllowCreateDeclarativeWorkflow="true" AllowSaveDeclarativeWorkflowAsTemplate="true" />
+      
+      <!-- Site Columns for ARB Process -->
+      <pnp:SiteFields>
+        <!-- Architecture Review Fields -->
+        <Field Type="Choice" DisplayName="Review Status" Required="FALSE" EnforceUniqueValues="FALSE" 
+               Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{A1234567-89AB-CDEF-0123-456789ABCDEF}" 
+               StaticName="ReviewStatus" Name="ReviewStatus">
+          <CHOICES>
+            <CHOICE>Submitted</CHOICE>
+            <CHOICE>In Review</CHOICE>
+            <CHOICE>Approved</CHOICE>
+            <CHOICE>Rejected</CHOICE>
+            <CHOICE>Conditional Approval</CHOICE>
+            <CHOICE>Deferred</CHOICE>
+          </CHOICES>
+        </Field>
+        
+        <Field Type="Choice" DisplayName="Architecture Domain" Required="FALSE" EnforceUniqueValues="FALSE" 
+               Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{B2345678-9ABC-DEF0-1234-56789ABCDEF0}" 
+               StaticName="ArchitectureDomain" Name="ArchitectureDomain">
+          <CHOICES>
+            <CHOICE>Business Architecture</CHOICE>
+            <CHOICE>Data Architecture</CHOICE>
+            <CHOICE>Application Architecture</CHOICE>
+            <CHOICE>Technology Architecture</CHOICE>
+            <CHOICE>Security Architecture</CHOICE>
+          </CHOICES>
+        </Field>
+        
+        <Field Type="Choice" DisplayName="TOGAF Phase" Required="FALSE" EnforceUniqueValues="FALSE" 
+               Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{C3456789-ABCD-EF01-2345-6789ABCDEF01}" 
+               StaticName="TOGAFPhase" Name="TOGAFPhase">
+          <CHOICES>
+            <CHOICE>Preliminary Phase</CHOICE>
+            <CHOICE>Phase A: Architecture Vision</CHOICE>
+            <CHOICE>Phase B: Business Architecture</CHOICE>
+            <CHOICE>Phase C: Information Systems Architecture</CHOICE>
+            <CHOICE>Phase D: Technology Architecture</CHOICE>
+            <CHOICE>Phase E: Opportunities and Solutions</CHOICE>
+            <CHOICE>Phase F: Migration Planning</CHOICE>
+            <CHOICE>Phase G: Implementation Governance</CHOICE>
+            <CHOICE>Phase H: Architecture Change Management</CHOICE>
+          </CHOICES>
+        </Field>
+        
+        <Field Type="Choice" DisplayName="Compliance Framework" Required="FALSE" EnforceUniqueValues="FALSE" 
+               Indexed="FALSE" Format="Dropdown" FillInChoice="TRUE" ID="{D4567890-BCDE-F012-3456-789ABCDEF012}" 
+               StaticName="ComplianceFramework" Name="ComplianceFramework" Mult="TRUE">
+          <CHOICES>
+            <CHOICE>NIST 800-53</CHOICE>
+            <CHOICE>NIST Cybersecurity Framework</CHOICE>
+            <CHOICE>FedRAMP Low</CHOICE>
+            <CHOICE>FedRAMP Moderate</CHOICE>
+            <CHOICE>FedRAMP High</CHOICE>
+            <CHOICE>ITIL v4</CHOICE>
+            <CHOICE>CIST</CHOICE>
+            <CHOICE>CIJISA</CHOICE>
+          </CHOICES>
+        </Field>
+        
+        <Field Type="Choice" DisplayName="Risk Level" Required="FALSE" EnforceUniqueValues="FALSE" 
+               Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{E5678901-CDEF-0123-4567-89ABCDEF0123}" 
+               StaticName="RiskLevel" Name="RiskLevel">
+          <CHOICES>
+            <CHOICE>Low</CHOICE>
+            <CHOICE>Medium</CHOICE>
+            <CHOICE>High</CHOICE>
+            <CHOICE>Critical</CHOICE>
+          </CHOICES>
+        </Field>
+        
+        <Field Type="DateTime" DisplayName="Review Date" Required="FALSE" EnforceUniqueValues="FALSE" 
+               Indexed="FALSE" Format="DateOnly" ID="{F6789012-DEF0-1234-5678-9ABCDEF01234}" 
+               StaticName="ReviewDate" Name="ReviewDate" />
+        
+        <Field Type="User" DisplayName="Architecture Owner" Required="FALSE" EnforceUniqueValues="FALSE" 
+               Indexed="FALSE" List="UserInfo" ShowField="ImnName" UserSelectionMode="PeopleOnly" 
+               UserSelectionScope="0" ID="{01234567-EF01-2345-6789-ABCDEF012345}" 
+               StaticName="ArchitectureOwner" Name="ArchitectureOwner" />
+        
+        <Field Type="Note" DisplayName="Architecture Description" Required="FALSE" EnforceUniqueValues="FALSE" 
+               Indexed="FALSE" NumLines="6" RichText="TRUE" RichTextMode="FullHtml" 
+               IsolateStyles="TRUE" ID="{12345678-F012-3456-789A-BCDEF0123456}" 
+               StaticName="ArchitectureDescription" Name="ArchitectureDescription" />
+      </pnp:SiteFields>
+      
+      <!-- Content Types -->
+      <pnp:ContentTypes>
+        <pnp:ContentType ID="0x0100A1B2C3D4E5F60718293A4B5C6D7E8F90" Name="ARB Review Request" 
+                        Description="Architecture Review Board Review Request" Group="ARB Content Types">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="A1234567-89AB-CDEF-0123-456789ABCDEF" Name="ReviewStatus" />
+            <pnp:FieldRef ID="B2345678-9ABC-DEF0-1234-56789ABCDEF0" Name="ArchitectureDomain" />
+            <pnp:FieldRef ID="C3456789-ABCD-EF01-2345-6789ABCDEF01" Name="TOGAFPhase" />
+            <pnp:FieldRef ID="D4567890-BCDE-F012-3456-789ABCDEF012" Name="ComplianceFramework" />
+            <pnp:FieldRef ID="E5678901-CDEF-0123-4567-89ABCDEF0123" Name="RiskLevel" />
+            <pnp:FieldRef ID="F6789012-DEF0-1234-5678-9ABCDEF01234" Name="ReviewDate" />
+            <pnp:FieldRef ID="01234567-EF01-2345-6789-ABCDEF012345" Name="ArchitectureOwner" />
+            <pnp:FieldRef ID="12345678-F012-3456-789A-BCDEF0123456" Name="ArchitectureDescription" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+      </pnp:ContentTypes>
+      
+      <!-- Lists and Libraries -->
+      <pnp:Lists>
+        <!-- ARB Review Requests -->
+        <pnp:ListInstance Title="ARB Review Requests" 
+                         Description="Track all Architecture Review Board submissions" 
+                         DocumentTemplate="" 
+                         TemplateType="100" 
+                         Url="Lists/ARBReviewRequests" 
+                         EnableVersioning="true" 
+                         EnableMinorVersions="false" 
+                         EnableModeration="false" 
+                         EnableFolderCreation="false"
+                         EnableAttachments="true">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x0100A1B2C3D4E5F60718293A4B5C6D7E8F90" Default="true" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="All Items" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" 
+                  Type="HTML" DisplayName="All Items" Url="Lists/ARBReviewRequests/AllItems.aspx" 
+                  Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=47">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" Ascending="FALSE" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="ReviewStatus" />
+                <FieldRef Name="ArchitectureDomain" />
+                <FieldRef Name="TOGAFPhase" />
+                <FieldRef Name="RiskLevel" />
+                <FieldRef Name="ReviewDate" />
+                <FieldRef Name="ArchitectureOwner" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+        </pnp:ListInstance>
+        
+        <!-- Architecture Documentation Library -->
+        <pnp:ListInstance Title="Architecture Documentation" 
+                         Description="Central repository for all architecture documentation" 
+                         DocumentTemplate="/_cts/Document/forms/template.dotx" 
+                         TemplateType="101" 
+                         Url="ArchitectureDocumentation" 
+                         EnableVersioning="true" 
+                         EnableMinorVersions="true" 
+                         EnableModeration="true" 
+                         EnableFolderCreation="true">
+          <pnp:Folders>
+            <pnp:Folder Name="Business Architecture" />
+            <pnp:Folder Name="Data Architecture" />
+            <pnp:Folder Name="Application Architecture" />
+            <pnp:Folder Name="Technology Architecture" />
+            <pnp:Folder Name="Security Architecture" />
+            <pnp:Folder Name="TOGAF ADM Documents" />
+            <pnp:Folder Name="Compliance Documents" />
+          </pnp:Folders>
+        </pnp:ListInstance>
+        
+        <!-- Compliance Tracking -->
+        <pnp:ListInstance Title="Compliance Tracking" 
+                         Description="Track compliance with various frameworks and standards" 
+                         DocumentTemplate="" 
+                         TemplateType="100" 
+                         Url="Lists/ComplianceTracking" 
+                         EnableVersioning="true" 
+                         EnableAttachments="true">
+          <pnp:Fields>
+            <Field Type="Choice" DisplayName="Framework" Required="TRUE" Format="Dropdown" ID="{AA111111-1111-1111-1111-111111111111}" StaticName="Framework" Name="Framework">
+              <CHOICES>
+                <CHOICE>NIST 800-53</CHOICE>
+                <CHOICE>FedRAMP</CHOICE>
+                <CHOICE>ITIL v4</CHOICE>
+                <CHOICE>CIST</CHOICE>
+                <CHOICE>CIJISA</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="Text" DisplayName="Control ID" Required="TRUE" MaxLength="255" ID="{BB222222-2222-2222-2222-222222222222}" StaticName="ControlID" Name="ControlID" />
+            <Field Type="Choice" DisplayName="Compliance Status" Required="TRUE" Format="Dropdown" ID="{CC333333-3333-3333-3333-333333333333}" StaticName="ComplianceStatus" Name="ComplianceStatus">
+              <CHOICES>
+                <CHOICE>Compliant</CHOICE>
+                <CHOICE>Partially Compliant</CHOICE>
+                <CHOICE>Non-Compliant</CHOICE>
+                <CHOICE>Not Applicable</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="DateTime" DisplayName="Last Assessment Date" Format="DateOnly" ID="{DD444444-4444-4444-4444-444444444444}" StaticName="LastAssessmentDate" Name="LastAssessmentDate" />
+          </pnp:Fields>
+        </pnp:ListInstance>
+        
+        <!-- Service Deployment Tracking -->
+        <pnp:ListInstance Title="Service Deployment Tracking" 
+                         Description="Track service deployments following TOGAF and EA principles" 
+                         DocumentTemplate="" 
+                         TemplateType="100" 
+                         Url="Lists/ServiceDeployment" 
+                         EnableVersioning="true" 
+                         EnableAttachments="true">
+          <pnp:Fields>
+            <Field Type="Text" DisplayName="Service Name" Required="TRUE" MaxLength="255" ID="{EE555555-5555-5555-5555-555555555555}" StaticName="ServiceName" Name="ServiceName" />
+            <Field Type="Choice" DisplayName="Deployment Stage" Required="TRUE" Format="Dropdown" ID="{FF666666-6666-6666-6666-666666666666}" StaticName="DeploymentStage" Name="DeploymentStage">
+              <CHOICES>
+                <CHOICE>Planning</CHOICE>
+                <CHOICE>Design</CHOICE>
+                <CHOICE>Development</CHOICE>
+                <CHOICE>Testing</CHOICE>
+                <CHOICE>Staging</CHOICE>
+                <CHOICE>Production</CHOICE>
+                <CHOICE>Retired</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="User" DisplayName="Service Owner" List="UserInfo" ShowField="ImnName" UserSelectionMode="PeopleOnly" ID="{11777777-7777-7777-7777-777777777777}" StaticName="ServiceOwner" Name="ServiceOwner" />
+          </pnp:Fields>
+        </pnp:ListInstance>
+      </pnp:Lists>
+      
+      <!-- Custom Actions for Power Automate Integration -->
+      <pnp:CustomActions>
+        <pnp:CustomAction Name="PowerAutomateARBWorkflow" 
+                         Description="Trigger Power Automate workflow for ARB review" 
+                         Location="CommandUI.Ribbon" 
+                         RegistrationType="List" 
+                         RegistrationId="100"
+                         Title="Start ARB Review Workflow"
+                         Sequence="10010">
+          <CommandUIExtension>
+            <CommandUIDefinitions>
+              <CommandUIDefinition Location="Ribbon.ListItem.Actions.Controls._children">
+                <Button Id="Ribbon.ListItem.Actions.PowerAutomateARB"
+                       Command="PowerAutomateARBCommand"
+                       Sequence="10"
+                       Description="Start Power Automate ARB Review Workflow"
+                       LabelText="ARB Review"
+                       TemplateAlias="o1"
+                       Image32by32="/_layouts/15/images/StartWorkflow32.png"
+                       Image16by16="/_layouts/15/images/StartWorkflow16.png" />
+              </CommandUIDefinition>
+            </CommandUIDefinitions>
+          </CommandUIExtension>
+        </pnp:CustomAction>
+      </pnp:CustomActions>
+      
+      <!-- Pages -->
+      <pnp:Pages>
+        <pnp:Page Url="Home.aspx" Layout="Home" Overwrite="true" />
+      </pnp:Pages>
+      
+      <!-- Navigation -->
+      <pnp:Navigation>
+        <pnp:CurrentNavigation>
+          <pnp:NavigationNode Title="Home" Url="/SitePages/Home.aspx" />
+          <pnp:NavigationNode Title="ARB Requests" Url="/Lists/ARBReviewRequests/AllItems.aspx" />
+          <pnp:NavigationNode Title="Architecture Docs" Url="/ArchitectureDocumentation/Forms/AllItems.aspx" />
+          <pnp:NavigationNode Title="Compliance" Url="/Lists/ComplianceTracking/AllItems.aspx" />
+          <pnp:NavigationNode Title="Service Deployment" Url="/Lists/ServiceDeployment/AllItems.aspx" />
+          <pnp:NavigationNode Title="Power BI Dashboard" Url="/SitePages/PowerBI-Dashboard.aspx" />
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
+      
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>
