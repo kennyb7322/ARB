@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture Review Board</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Architecture Review Board</h1>
+    <p class="subtitle">Submit, size, and approve architecture changes</p>
+  </header>
+
+  <nav class="stepper" aria-label="ARB workflow steps">
+    <ol>
+      <li class="step" data-step="size">
+        <span class="step-num">1</span>
+        <span class="step-label">Select ARB Size</span>
+      </li>
+      <li class="step" data-step="approval">
+        <span class="step-num">2</span>
+        <span class="step-label">Approval Process</span>
+      </li>
+      <li class="step" data-step="summary">
+        <span class="step-num">3</span>
+        <span class="step-label">Summary</span>
+      </li>
+    </ol>
+  </nav>
+
+  <main>
+    <!-- Step 1: Size Selection -->
+    <section class="view" data-view="size">
+      <h2>Select the size of this ARB</h2>
+      <p class="view-description">
+        ARB size determines the rigor and number of reviewers required.
+        Pick the option that best matches the scope of your change.
+      </p>
+
+      <div class="size-grid" role="radiogroup" aria-label="ARB Size">
+        <label class="size-card">
+          <input type="radio" name="arb-size" value="small" />
+          <div class="size-card-body">
+            <h3>Small</h3>
+            <p class="size-card-meta">1 reviewer &middot; ~2 days</p>
+            <ul>
+              <li>Localized change in a single service</li>
+              <li>No data model or contract changes</li>
+              <li>Low blast radius</li>
+            </ul>
+          </div>
+        </label>
+
+        <label class="size-card">
+          <input type="radio" name="arb-size" value="medium" />
+          <div class="size-card-body">
+            <h3>Medium</h3>
+            <p class="size-card-meta">2 reviewers &middot; ~5 days</p>
+            <ul>
+              <li>Cross-service changes within one domain</li>
+              <li>Minor API or schema additions</li>
+              <li>Moderate blast radius</li>
+            </ul>
+          </div>
+        </label>
+
+        <label class="size-card">
+          <input type="radio" name="arb-size" value="large" />
+          <div class="size-card-body">
+            <h3>Large</h3>
+            <p class="size-card-meta">3 reviewers &middot; ~10 days</p>
+            <ul>
+              <li>Cross-domain or platform-level change</li>
+              <li>Breaking API or data migrations</li>
+              <li>High blast radius or compliance impact</li>
+            </ul>
+          </div>
+        </label>
+
+        <label class="size-card">
+          <input type="radio" name="arb-size" value="xlarge" />
+          <div class="size-card-body">
+            <h3>X-Large</h3>
+            <p class="size-card-meta">Full board &middot; ~3 weeks</p>
+            <ul>
+              <li>Company-wide architectural shift</li>
+              <li>New platform, vendor, or major rewrite</li>
+              <li>Significant cost or security impact</li>
+            </ul>
+          </div>
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label for="arb-title">ARB title</label>
+        <input id="arb-title" type="text" placeholder="e.g. Move auth service to OIDC" />
+      </div>
+
+      <div class="actions">
+        <button id="next-to-approval" class="btn btn-primary" disabled>
+          Continue to Approval &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 2: Approval Process -->
+    <section class="view" data-view="approval" hidden>
+      <h2>Approval Process</h2>
+      <p class="view-description">
+        Reviewers are auto-assigned based on the ARB size you selected.
+        Each reviewer must approve before the ARB can be finalized.
+      </p>
+
+      <div class="summary-banner">
+        <div>
+          <span class="label">ARB:</span>
+          <span id="approval-title">—</span>
+        </div>
+        <div>
+          <span class="label">Size:</span>
+          <span id="approval-size" class="size-badge">—</span>
+        </div>
+      </div>
+
+      <h3>Required reviewers</h3>
+      <ul id="reviewer-list" class="reviewer-list"></ul>
+
+      <div class="form-row">
+        <label for="approval-notes">Notes for reviewers (optional)</label>
+        <textarea id="approval-notes" rows="4"
+          placeholder="Context, links to design docs, anything reviewers should know..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button id="back-to-size" class="btn btn-secondary">&larr; Back</button>
+        <button id="submit-approval" class="btn btn-primary" disabled>
+          Submit for Approval
+        </button>
+      </div>
+    </section>
+
+    <!-- Step 3: Summary -->
+    <section class="view" data-view="summary" hidden>
+      <h2>ARB submitted</h2>
+      <p class="view-description">
+        Your ARB has been routed to the assigned reviewers.
+        You will be notified as each reviewer completes their decision.
+      </p>
+
+      <dl class="summary">
+        <dt>Title</dt><dd id="summary-title">—</dd>
+        <dt>Size</dt><dd id="summary-size">—</dd>
+        <dt>Reviewers</dt><dd id="summary-reviewers">—</dd>
+        <dt>Status</dt><dd><span class="status-pill pending">Pending approval</span></dd>
+      </dl>
+
+      <div class="actions">
+        <button id="start-over" class="btn btn-secondary">Submit another ARB</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
